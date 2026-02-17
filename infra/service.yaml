@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wednesdaymvp
+  namespace: wednesdaymvp
+spec:
+  selector:
+    app: wednesdaymvp
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000

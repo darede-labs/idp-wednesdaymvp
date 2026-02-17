@@ -1,0 +1,17 @@
+apiVersion: platform.darede.io/v1alpha1
+kind: StaticWebsite
+metadata:
+  name: wednesdaymvp-web
+  namespace: wednesdaymvp
+  annotations:
+    platform.darede.io/provisioningRunId: "fa3b1a1b-1da8-458e-8eba-b3f525311c0e"
+spec:
+  siteName: wednesdaymvp
+  region: us-east-1
+  indexDocument: index.html
+  errorDocument: index.html
+  priceClass: PriceClass_100
+  backendOriginDomain: internal-wednesdaymvp.timedevops.click
+  customDomain: wednesdaymvp.timedevops.click
+  acmCertificateArn: arn:aws:acm:us-east-1:948881762705:certificate/051f6515-0d0b-459c-a056-0663f7c88f5e
+  hostedZoneId: Z09212782MXWNY5EYNICO

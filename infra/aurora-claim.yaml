@@ -1,0 +1,40 @@
+apiVersion: platform.darede.io/v1alpha1
+kind: Aurora
+metadata:
+  name: wednesdaymvp-db
+  namespace: wednesdaymvp
+  labels:
+    db.engine: postgresql
+  annotations:
+    platform.darede.io/provisioningRunId: "fa3b1a1b-1da8-458e-8eba-b3f525311c0e"
+spec:
+  compositionSelector:
+    matchLabels:
+      db.engine: postgresql
+  appName: wednesdaymvp
+  dbSize: M  # S | M | L
+  dbEngine: postgresql  # aurora-postgresql | aurora-mysql | postgresql | mysql
+  
+
+  # VPC Configuration (auto-populated from platform-params ConfigMap)
+  vpcId: "vpc-0a66641a80c762baa"
+
+  # Private subnet IDs for Aurora subnet group (must be in different AZs)
+  # Auto-populated from EKS cluster VPC configuration
+  subnetIds:
+    ["subnet-0e482760d4e4f0250","subnet-001f264a2c946e35c","subnet-05916f1c5cb54a6a8"]
+
+  # Security group that will be allowed to connect to Aurora on port 5432
+  # Using EKS node security group for direct pod-to-DB connectivity
+  allowedSecurityGroupId: "sg-0af4edc484e912aa3"
+
+  # Master password secret reference (must exist before creating Aurora)
+  masterPasswordSecretRef:
+    name: wednesdaymvp-aurora-master-password
+    namespace: wednesdaymvp
+    key: password
+
+  # Write connection secret directly to the app namespace
+  # Keys: username, password, endpoint, port, database
+  writeConnectionSecretToRef:
+    name: wednesdaymvp-db-conn
