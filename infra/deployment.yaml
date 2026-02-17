@@ -17,7 +17,7 @@ spec:
       initContainers:
         - name: wait-for-db
 
-          image: postgres:15-alpine
+          image: 948881762705.dkr.ecr.us-east-1.amazonaws.com/idp-wednesdaymvp:sha-2a477f3f06de9d71274cc18b5973e26eb2a77ad6
           command:
             - sh
             - -c
@@ -58,7 +58,7 @@ spec:
       
       containers:
         - name: api
-          image: 948881762705.dkr.ecr.us-east-1.amazonaws.com/idp-wednesdaymvp:latest
+          image: 948881762705.dkr.ecr.us-east-1.amazonaws.com/idp-wednesdaymvp:sha-2a477f3f06de9d71274cc18b5973e26eb2a77ad6
           imagePullPolicy: Always
           command:
             - sh
