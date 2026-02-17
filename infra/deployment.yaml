@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wednesdaymvp
+  namespace: wednesdaymvp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wednesdaymvp
+  template:
+    metadata:
+      labels:
+        app: wednesdaymvp
+    spec:
+      # Wait for database to be ready before starting the application
+      initContainers:
+        - name: wait-for-db
+
+          image: postgres:15-alpine
+          command:
+            - sh
+            - -c
+            - |
+              until [ -f /db-conn/endpoint ] && [ -f /db-conn/port ] && [ -f /db-conn/username ]; do
+                echo "Waiting for DB connection secret files..."
+                sleep 5
+              done
+              DB_HOST="$(cat /db-conn/endpoint | cut -d: -f1)"
+              DB_PORT="$(cat /db-conn/port)"
+              DB_USER="$(cat /db-conn/username)"
+              echo "Waiting for PostgreSQL to be ready..."
+              until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER"; do
+                echo "PostgreSQL is unavailable - sleeping 2s"
+                sleep 2
+              done
+              echo "PostgreSQL is ready!"
+
+          volumeMounts:
+            - name: db-conn
+              mountPath: /db-conn
+              readOnly: true
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+      
+      # Security context for the pod
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      
+      containers:
+        - name: api
+          image: 948881762705.dkr.ecr.us-east-1.amazonaws.com/idp-wednesdaymvp:latest
+          imagePullPolicy: Always
+          command:
+            - sh
+            - -c
+            - |
+              until [ -f /db-conn/endpoint ] && [ -f /db-conn/port ] && [ -f /db-conn/username ] && [ -f /db-conn/password ]; do
+                echo "Waiting for DB connection secret files..."
+                sleep 5
+              done
+              export DB_HOST="$(cat /db-conn/endpoint | cut -d: -f1)"
+              export DB_PORT="$(cat /db-conn/port)"
+              export DB_USER="$(cat /db-conn/username)"
+              export DB_PASSWORD="$(cat /db-conn/password)"
+              exec npm start
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: DB_ENGINE
+              value: "postgresql"
+            - name: DB_SSL
+              value: "true"
+            - name: DB_NAME
+              value: "wednesdaymvp"
+          volumeMounts:
+            - name: db-conn
+              mountPath: /db-conn
+              readOnly: true
+          
+          # Container security context
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: false  # Set to true if app doesn't need write access
+          
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "600m"
+              memory: "512Mi"
+
+      volumes:
+        - name: db-conn
+          secret:
+            secretName: wednesdaymvp-db-conn
+            optional: true

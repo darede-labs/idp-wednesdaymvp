@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wednesdaymvp
+  namespace: wednesdaymvp
+  annotations:
+    alb.ingress.kubernetes.io/group.name: "dev-platform"
+    alb.ingress.kubernetes.io/group.order: "60"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:948881762705:certificate/051f6515-0d0b-459c-a056-0663f7c88f5e
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/healthcheck-path: /api/health
+    alb.ingress.kubernetes.io/security-groups: sg-0e4f3823de6ccc51b
+    external-dns.alpha.kubernetes.io/hostname: "internal-wednesdaymvp.timedevops.click,api-wednesdaymvp.timedevops.click"
+spec:
+  ingressClassName: alb
+  rules:
+    - host: internal-wednesdaymvp.timedevops.click
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wednesdaymvp
+                port:
+                  number: 3000
+    - host: api-wednesdaymvp.timedevops.click
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wednesdaymvp
+                port:
+                  number: 3000

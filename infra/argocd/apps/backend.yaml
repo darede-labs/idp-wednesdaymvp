@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: wednesdaymvp-backend
+  namespace: argocd
+  labels:
+    platform.darede.io/app: "wednesdaymvp"
+    platform.darede.io/component: "backend"
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+    platform.darede.io/provisioningRunId: "fa3b1a1b-1da8-458e-8eba-b3f525311c0e"
+spec:
+  project: apps
+  source:
+    repoURL: https://github.com/darede-labs/idp-wednesdaymvp.git
+    targetRevision: main
+    path: infra
+    directory:
+      include: '{deployment.yaml,service.yaml,ingress.yaml}'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: wednesdaymvp
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
