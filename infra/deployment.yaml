@@ -16,8 +16,7 @@ spec:
       # Wait for database to be ready before starting the application
       initContainers:
         - name: wait-for-db
-
-          image: 948881762705.dkr.ecr.us-east-1.amazonaws.com/idp-wednesdaymvp:sha-2a477f3f06de9d71274cc18b5973e26eb2a77ad6
+          image: postgres:15-alpine
           command:
             - sh
             - -c
