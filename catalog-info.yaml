@@ -5,6 +5,9 @@ metadata:
   description: asd
   annotations:
     github.com/project-slug: darede-labs/idp-wednesdaymvp
+    platform.darede.io/provisioningRunId: "fa3b1a1b-1da8-458e-8eba-b3f525311c0e"
+    platform.darede.io/appName: "wednesdaymvp"
+    platform.darede.io/repoName: "idp-wednesdaymvp"
 spec:
   type: service
   lifecycle: experimental
