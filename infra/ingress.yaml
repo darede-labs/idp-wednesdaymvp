@@ -13,7 +13,6 @@ metadata:
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:948881762705:certificate/051f6515-0d0b-459c-a056-0663f7c88f5e
     alb.ingress.kubernetes.io/ssl-redirect: "443"
     alb.ingress.kubernetes.io/healthcheck-path: /api/health
-    alb.ingress.kubernetes.io/security-groups: sg-0e4f3823de6ccc51b
     external-dns.alpha.kubernetes.io/hostname: "internal-wednesdaymvp.timedevops.click,api-wednesdaymvp.timedevops.click"
 spec:
   ingressClassName: alb
